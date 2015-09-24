@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN"
+        "HTMLFiles/xhtml-math11-f.dtd">
+
+<!-- Created with the Wolfram Language : www.wolfram.com -->
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+ <title>
+  Untitled
+ </title>
+ <link href="HTMLFiles/iterating1.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+
+<p class="Title">
+ Iterating functions with cellular automata: part 1, successor function
+</p>
+
+
+
+<p class="Section">
+ introduction
+</p>
+
+
+
+<p class="Text">
+ This is the first notebook in a series exploring the iteration of functions with cellular automata. We will introduce a general system for translating arithmetic functions into cellular automata and we will show how to run and interpret the resulting rules.
+</p>
+
+
+
+<p class="Text">
+ The systems discussed in this notebook are 1 dimensional. The rules will work for arbitrary bases, but we will primarily use base 10 for illustrative purposes. The digits of each number are represented by states in the cellular automata and special intermediate states are represented by other states. A high-level explanation of the system discussed here is that the digits of each number are laid out diagonally so that digits further from the radix point interact at later time steps. Our convention will be to have the most significant digit on the left and the least significant digit to the right, i.e., standard mathematical notation.
+</p>
+
+
+
+<p class="Text">
+ This notebook will explain the rules used for computing the successor function, i.e. x &#62625; x+1, and iteratively apply it to some starting number.
+</p>
+
+
+
+<p class="Section">
+ construction
+</p>
+
+
+
+<p class="Text">
+ Our system implements the same logic that a full adder uses to add 2 arbitrary-length integers. First, start with a radix point state that persists through time:
+</p>
+
+
+
+<p class="Input">
+ <img src="HTMLFiles/iterating1_1.gif" alt="iterating1_1.gif" width="36" height="36" style="vertical-align:middle" />
+</p>
+
+<p class="Text">
+ To the left of the radix point will be the initial number, with each cell representing a separate digit, e.g., for the decimal number 237:
+</p>
+
+
+
+<p class="Input">
+ <img src="HTMLFiles/iterating1_2.gif" alt="iterating1_2.gif" width="138" height="36" style="vertical-align:middle" />
+</p>
+
+<p class="Text">
+ A special padding state will be used after the last digit and be assumed to extend infinitely to the left. This padding state will function equivalently to 0, but will show where the number ends.
+</p>
+
+
+
+<p class="Input">
+ <img src="HTMLFiles/iterating1_3.gif" alt="iterating1_3.gif" width="240" height="36" style="vertical-align:middle" />
+</p>
+
+<p class="Text">
+ After 1 time step, not much will have happened. All that will be different is that the least significant digit state is now a special intermediate state signifying that it has been incremented by 1:
+</p>
+
+
+
+<p class="Input">
+ <img src="HTMLFiles/iterating1_4.gif" alt="iterating1_4.gif" width="240" height="36" style="vertical-align:middle" />
+</p>
+
+<p class="Text">
+ All other states remain unchanged.
+</p>
+
+
+
+<p class="Text">
+ The intermediate results here represent the running sum, which contains information for the next digit to be returned, as well next carry. <span><span><img src="HTMLFiles/iterating1_5.gif" alt="iterating1_5.gif" width="36" height="36" style="vertical-align:middle" /></span></span> indicates that 8/10 == 0 will be carried to the left and 8%10 = 8 will be the digit output for the first column.
+</p>
+
+
+
+<p class="Text">
+ After time step 2, things start to get interesting:
+</p>
+
+
+
+<p class="Text">
+ <span><span><img src="HTMLFiles/iterating1_6.gif" alt="iterating1_6.gif" width="240" height="36" style="vertical-align:middle" /></span></span>
+</p>
+
+
+
+<p class="Text">
+ The neighborhood only needs to be current cell and the cell to the immediate right. The new intermediate state is 3+0 == 3 and the first output digit is 8.
+</p>
+
+
+
+<p class="Text">
+ There are now 2 regular states to keep track of: 2 and 8. The 8 will increment to the intermediate 9 state in the next time step and the regular 2 will go to the intermediate 2 state.
+</p>
+
+
+
+<p class="Input">
+ <img src="HTMLFiles/iterating1_7.gif" alt="iterating1_7.gif" width="240" height="36" style="vertical-align:middle" />
+</p>
+
+<p class="Text">
+ Now, since 2 is the left edge of the number, we need a way to handle carries and other cases of increasing number of digits. The regular padding state will now transition into an intermediate padding state to continue the pattern. Functionally, the padding states are equivalent to 0.
+</p>
+
+
+
+<p class="Input">
+ <img src="HTMLFiles/iterating1_8.gif" alt="iterating1_8.gif" width="240" height="36" style="vertical-align:middle" />
+</p>
+
+<p class="Text">
+ Finally, the regular 9 state transitions to an intermediate 10 state, the largest possible intermediate state.
+</p>
+
+
+
+<p class="Input">
+ <img src="HTMLFiles/iterating1_9.gif" alt="iterating1_9.gif" width="255" height="36" style="vertical-align:middle" />
+</p>
+
+<p class="Text">
+ A graphical representation of the evolution through time:
+</p>
+
+
+
+<p class="Input">
+ <img src="HTMLFiles/iterating1_10.gif" alt="iterating1_10.gif" width="416" height="222" style="vertical-align:middle" />
+</p>
+
+<p class="Text">
+ The initial state is the top row and the evolution proceeds downward through time. Notice that the last row has an intermediate 4 state. The carry from the intermediate 10 state incremented the regular 3 state.
+</p>
+
+
+
+<p class="Text">
+ The light yellow states <span><span><img src="HTMLFiles/iterating1_11.gif" alt="iterating1_11.gif" width="36" height="36" style="vertical-align:middle" /></span></span> represent the regular input and output digits for the numbers. The green states <span><span><img src="HTMLFiles/iterating1_12.gif" alt="iterating1_12.gif" width="36" height="36" style="vertical-align:middle" /></span></span> represent the intermediate states that depend on their previous state and their neighbor on the right. The solid square state <span><span><img src="HTMLFiles/iterating1_13.gif" alt="iterating1_13.gif" width="36" height="36" style="vertical-align:middle" /></span></span> is the &ldquo;radix point&rdquo;. The empty square states <span><span><img src="HTMLFiles/iterating1_14.gif" alt="iterating1_14.gif" width="36" height="36" style="vertical-align:middle" /></span></span> are functionally equivalent to <span><span><img src="HTMLFiles/iterating1_15.gif" alt="iterating1_15.gif" width="36" height="36" style="vertical-align:middle" /></span></span> but are useful for denoting the edge of the number.
+</p>
+
+
+
+<p class="Text">
+ Given a properly formed initial row of <span><span><img src="HTMLFiles/iterating1_16.gif" alt="iterating1_16.gif" width="36" height="36" style="vertical-align:middle" /></span></span>, <span><span><img src="HTMLFiles/iterating1_17.gif" alt="iterating1_17.gif" width="36" height="36" style="vertical-align:middle" /></span></span>, and <span><span><img src="HTMLFiles/iterating1_18.gif" alt="iterating1_18.gif" width="36" height="36" style="vertical-align:middle" /></span></span> states representing a starting number, the complete rule table for calculating the next row is: <br /><span><span><img src="HTMLFiles/iterating1_19.gif" alt="iterating1_19.gif" width="915" height="79" style="vertical-align:middle" /></span></span>
+</p>
+
+
+
+<p class="Text">
+ Find the first matching neighborhood of cells on top to calculate the correct state on the bottom. Each cell can be calculated from these rules.
+</p>
+
+
+
+<p class="Section">
+ analysis
+</p>
+
+
+
+<p class="Text">
+ There has been no effort to minimize the number of states in the cellular automaton. There are 24 total states:
+</p>
+
+
+
+<p class="Input">
+ <img src="HTMLFiles/iterating1_20.gif" alt="iterating1_20.gif" width="1335" height="36" style="vertical-align:middle" />
+</p>
+
+<p class="Text">
+ 10 regular digit states, 10+1 intermediate states, a regular padding state, an intermediate padding state, and a radix point state.
+</p>
+
+
+
+<p class="Section">
+ examples
+</p>
+
+
+
+<p class="Text">
+ Here is an example with the initial state starting at 8. The regular states are hilited. The evolution goes from 8 to 12.
+</p>
+
+
+
+<p class="Input">
+ <img src="HTMLFiles/iterating1_21.gif" alt="iterating1_21.gif" width="369" height="360" style="vertical-align:middle" />
+</p>
+
+<p class="Text">
+ Here is an example starting at 99:
+</p>
+
+
+
+<p class="Input">
+ <img src="HTMLFiles/iterating1_22.gif" alt="iterating1_22.gif" width="432" height="395" style="vertical-align:middle" />
+</p>
+
+<p class="Text">
+ The evolution goes from 99 to 103.
+</p>
+
+
+
+<p class="Section">
+ Summary
+</p>
+
+
+
+<p class="Text">
+ This notebook presented a cellular automata for computing the successor function. Inputs and outputs of a full-adder are combined into a kind of intermediate state that intermixes with regular digit states. In later notebooks we will explain arbitrary addition, subtraction, multiplication, and special cases of division. Then we will move to other mathematical functions such as modulo and bitwise operations, conditional rules, optimizations.
+</p>
+
+
+
+
+
+
+<div style="font-family:Helvetica; font-size:11px; width:100%; border:1px none #999999; border-top-style:solid; padding-top:2px; margin-top:20px;">
+ <a href="http://www.wolfram.com/language/" style="color:#000; text-decoration:none;">
+  <span style="color:#555555">Created with the Wolfram Language</span> 
+ </a>
+</div>
+</body>
+
+</html>
